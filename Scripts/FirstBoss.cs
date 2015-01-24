@@ -2,9 +2,16 @@
 using System.Collections;
 
 public class FirstBoss : MonoBehaviour {
+	GameObject player;
 
+	void Start()
+	{
+		player = GameObject.Find ("Player");
+	}
 	void Die()
 	{
-		Destroy(gameObject);
+		Destroy (player.GetComponent<DamageOnCollide> ());
+		Destroy (gameObject);
+
 	}
 }
