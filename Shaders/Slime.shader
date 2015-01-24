@@ -1,14 +1,28 @@
-﻿Shader "EndlessBoss/Vertex Lighting" {
+﻿Shader "EndlessBoss/Slime" {
 	Properties {
 		_Color ("Main Color", Color) = (1,1,1,1)
 		_SpecColor ("Specular Color", Color) = (1,1,1,1)
 		_Shininess ("Shininess", Float) = 10
+		_DisplacementMagnitude("Displacement Magnitude", Float) = 0.05
+		_DisplacementVerticalPeriod("Displacement Vertical Period", Float) = 10
+		_DisplacementAnimationPeriod("Displacement Animation Period", Float) = 1
+		
+		//_Thickness ("Thickness (R)", 2D) = "bump" {}
+		//_Power ("Subsurface Power", Float) = 1.0
+		//_Distortion ("Subsurface Distortion", Float) = 0.0
+		//_Scale ("Subsurface Scale", Float) = 0.5
+		//_SubColor ("Subsurface Color", Color) = (1.0, 1.0, 1.0, 1.0)
 	}
 	SubShader {
-		Tags { "RenderType" = "Opaque" "LightMode" = "ForwardBase" }
+		Tags { "RenderType" = "Opaque" "LightMode" = "ForwardBase" "Queue" = "Transparent" }
 		LOD 200
 		
 		Pass {
+			Blend SrcAlpha OneMinusSrcAlpha
+			//Cull Off
+			//ZWrite On
+			//ZTest Always
+			
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
@@ -17,6 +31,9 @@
 			uniform float4 _Color;
 			uniform float4 _SpecColor;
 			uniform float _Shininess;
+			uniform float _DisplacementMagnitude;
+			uniform float _DisplacementVerticalPeriod;
+			uniform float _DisplacementAnimationPeriod;
 			
 			uniform float4 _LightColor0;
 			
@@ -32,8 +49,14 @@
 			vertexOutput vert(vertexInput i) {
 				vertexOutput o;
 				
-				float4 posWorld = mul(_Object2World, i.pos);
 				float3 normalDirection = normalize(mul(float4(i.normal, 0.0), _World2Object).xyz);
+				float3 displacement = _DisplacementMagnitude * (0.5 + 0.5 * sin(
+					i.pos.y * _DisplacementVerticalPeriod + 
+					_Time.w * _DisplacementAnimationPeriod
+				)) * normalDirection;
+				i.pos.xyz += displacement;
+				
+				float4 posWorld = mul(_Object2World, i.pos);
 				float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - posWorld.xyz);
 				
 				float3 lightDirecton;
@@ -50,13 +73,15 @@
 				}
 				
 				float diffuseStrength = saturate(dot(normalDirection, lightDirecton));
-				float specularStrength = saturate(dot(reflect(-lightDirecton, normalDirection), viewDirection));
+				float specularStrength = pow(saturate(dot(reflect(-lightDirecton, normalDirection), viewDirection)), _Shininess);
+				
 				float3 diffuseColor = atten * diffuseStrength * _LightColor0.rgb;
-				float3 specularColor = diffuseColor * _SpecColor.rgb * pow(specularStrength, _Shininess);
+				float3 specularColor = diffuseColor * _SpecColor.rgb * specularStrength;
 				float3 totalLighting = diffuseColor + specularColor + UNITY_LIGHTMODEL_AMBIENT.rgb;
 				
 				o.pos = mul(UNITY_MATRIX_MVP, i.pos);
-				o.col = float4(totalLighting, 1.0) * _Color;
+				o.col.rgb = totalLighting * _Color.rgb;
+				o.col.a = clamp(0.8 + 0.2 * specularStrength, 0.8, 1.0);
 				return o;
 			}
 			

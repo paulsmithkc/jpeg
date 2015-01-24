@@ -76,9 +76,9 @@
 				}
 				
 				float diffuseStrength = saturate(dot(normalDirection, lightDirecton));
-				float specularStrength = saturate(dot(reflect(-lightDirecton, lightDirecton), viewDirection));
+				float specularStrength = saturate(dot(reflect(-lightDirecton, normalDirection), viewDirection));
 				float ramp = tex2D(_Ramp, float2(diffuseStrength * 0.5 + 0.5, 0.5)).r;
-				float3 diffuseColor = atten * ramp * _LightColor0.rgb;
+				float3 diffuseColor = atten * ramp	 * _LightColor0.rgb;
 				float3 specularColor = atten * diffuseStrength * tex2D(_Gloss, i.uv3) * pow(specularStrength, _Shininess);
 				float3 totalLighting = diffuseColor + specularColor + UNITY_LIGHTMODEL_AMBIENT.rgb;
 				
