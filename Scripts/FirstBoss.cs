@@ -5,6 +5,6 @@ public class FirstBoss : MonoBehaviour {
 
 	void Die()
 	{
-		Destroy (gameObject);
+		Destroy(gameObject);
 	}
 }
