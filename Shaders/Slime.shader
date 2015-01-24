@@ -3,6 +3,7 @@
 		_Color ("Main Color", Color) = (1,1,1,1)
 		_SpecColor ("Specular Color", Color) = (1,1,1,1)
 		_Shininess ("Shininess", Float) = 10
+		_MainTex ("Base (RGB)", 2D) = "white" {}
 		_DisplacementMagnitude("Displacement Magnitude", Float) = 0.05
 		_DisplacementVerticalPeriod("Displacement Vertical Period", Float) = 10
 		_DisplacementAnimationPeriod("Displacement Animation Period", Float) = 1
@@ -31,6 +32,8 @@
 			uniform float4 _Color;
 			uniform float4 _SpecColor;
 			uniform float _Shininess;
+			uniform sampler2D _MainTex;
+			uniform float4 _MainTex_ST;
 			uniform float _DisplacementMagnitude;
 			uniform float _DisplacementVerticalPeriod;
 			uniform float _DisplacementAnimationPeriod;
@@ -40,10 +43,12 @@
 			struct vertexInput {
 				float4 pos : POSITION;
 				float3 normal : NORMAL;
+				float4 uv : TEXCOORD0;
 			};
 			struct vertexOutput {
 				float4 pos : SV_POSITION;
-				float4 col : COLOR;
+				float4 lightcolor : COLOR;
+				float2 uv : TEXCOORD0;
 			};
 			
 			vertexOutput vert(vertexInput i) {
@@ -53,7 +58,7 @@
 				float3 displacement = _DisplacementMagnitude * (0.5 + 0.5 * sin(
 					i.pos.y * _DisplacementVerticalPeriod + 
 					_Time.w * _DisplacementAnimationPeriod
-				)) * normalDirection;
+				)) * i.normal;
 				i.pos.xyz += displacement;
 				
 				float4 posWorld = mul(_Object2World, i.pos);
@@ -80,13 +85,14 @@
 				float3 totalLighting = diffuseColor + specularColor + UNITY_LIGHTMODEL_AMBIENT.rgb;
 				
 				o.pos = mul(UNITY_MATRIX_MVP, i.pos);
-				o.col.rgb = totalLighting * _Color.rgb;
-				o.col.a = clamp(0.8 + 0.2 * specularStrength, 0.8, 1.0);
+				o.lightcolor.rgb = totalLighting * _Color.rgb;
+				o.lightcolor.a = clamp(0.8 + 0.2 * specularStrength, 0.8, 1.0);
+				o.uv = TRANSFORM_TEX(i.uv, _MainTex);
 				return o;
 			}
 			
 			float4 frag(vertexOutput i) : COLOR {
-				return i.col;
+				return i.lightcolor * tex2D(_MainTex, i.uv);
 			}
 			
 			ENDCG
