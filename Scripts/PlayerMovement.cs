@@ -18,7 +18,12 @@ public class PlayerMovement: MonoBehaviour {
 	{
 		cc = GetComponent<CharacterController> ();
 	}
-	
+
+    void PickUpItem(string Item)
+    {
+        Debug.Log("Player picked up " + Item);
+    }
+
 	// Update is called once per frame
 	void Update () 
 	{

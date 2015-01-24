@@ -4,7 +4,7 @@ using System.Collections;
 public class DamageOnCollide : MonoBehaviour {
 	private bool canTakeDamage = true;
 	public int damageToDeal = 1;
-	public float delayBetweenHits = 3;
+	public float delayBetweenHits = 3; //Set to 0 to deactivate
 	public CollisionTarget target;
 
 	public enum CollisionTarget{Player, Enemy}
@@ -25,7 +25,11 @@ public class DamageOnCollide : MonoBehaviour {
 		{
 			hit.transform.SendMessage("TakeDamage", damageToDeal);
 			canTakeDamage = false;
-			Invoke("SetCanTakeDamage", delayBetweenHits);
+
+			if(delayBetweenHits > 0)
+			{
+				Invoke("SetCanTakeDamage", delayBetweenHits);
+			}
 		}
 	}
 
