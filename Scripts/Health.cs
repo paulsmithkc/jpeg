@@ -25,7 +25,7 @@ public class Health : MonoBehaviour {
 		if (curHealth <= 0)
 		{
 			Debug.Log(gameObject.name + " Died");
-			gameObject.SendMessage("Die", SendMessageOptions.DontRequireReceiver);
+			gameObject.BroadcastMessage("Die", SendMessageOptions.DontRequireReceiver);
 		}
 	}
 }

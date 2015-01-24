@@ -11,7 +11,8 @@ public class Lazer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		offset.y += Time.deltaTime*speed;
+		offset.y += Time.deltaTime*speed*.5f;
+		offset.x += Time.deltaTime*speed;
 		renderer.material.mainTextureOffset = offset;
 	}
 }
