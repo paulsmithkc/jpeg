@@ -11,7 +11,7 @@ public class PlayerMovement: MonoBehaviour {
 	public bool invertY = true;
 
 	private CharacterController cc;
-	public float mouseLookUp = 0;
+	private float mouseLookUp = 0;
 
 
 	void Start () 
@@ -43,7 +43,7 @@ public class PlayerMovement: MonoBehaviour {
 			mouseLookUp -= Input.GetAxis ("Mouse Y");
 		}
 		mouseLookUp = Mathf.Clamp (mouseLookUp, -90, 90);
-		playerCamera.transform.localEulerAngles = new Vector3 (mouseLookUp,0, 0);
+		playerCamera.transform.localEulerAngles = new Vector3(mouseLookUp, 0, 0);
 
 		transform.eulerAngles += new Vector3(0,Input.GetAxis("Mouse X"),0);
 

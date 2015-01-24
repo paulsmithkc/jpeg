@@ -5,6 +5,10 @@ public class Health : MonoBehaviour {
 	public int curHealth = 3;
 	public int maxHealth = 3;
 
+	void Start() {
+		curHealth = maxHealth;
+	}
+
 	void AddHealth(int amount)
 	{
 		curHealth += amount;
@@ -16,10 +20,12 @@ public class Health : MonoBehaviour {
 
 	void TakeDamage(int damage)
 	{
+		Debug.Log(gameObject.name + " Took Damage");
 		curHealth -= damage;
-		if(curHealth <= 0)
+		if (curHealth <= 0)
 		{
-			BroadcastMessage("Die",gameObject,SendMessageOptions.DontRequireReceiver);
+			Debug.Log(gameObject.name + " Died");
+			gameObject.BroadcastMessage("Die", SendMessageOptions.DontRequireReceiver);
 		}
 	}
 }
