@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerMovement: MonoBehaviour {
 	public float speed = 5;
@@ -7,6 +8,10 @@ public class PlayerMovement: MonoBehaviour {
 	public float gravity = 9.86f;
 	public float jumpSpeed = 2;
 	public Camera playerCamera;
+    public GameObject[] PickupItems;
+    public Animator Ani;
+    public GameObject Mesh;
+ 
 
 	public bool invertY = true;
 
@@ -17,6 +22,8 @@ public class PlayerMovement: MonoBehaviour {
 	public AudioClip music;
 	public float musicVolume = 1.0f;
 
+    private int lastAttackType = 2;
+
 	void Start () 
 	{
 		cc = GetComponent<CharacterController>();
@@ -25,16 +32,55 @@ public class PlayerMovement: MonoBehaviour {
 		audioSource.clip = music;
 		audioSource.volume = musicVolume;
 		audioSource.Play();
+		Ani = Mesh.GetComponent<Animator>();
+        Ani.Play("Idle");
 	}
 
     void PickUpItem(string Item)
     {
         Debug.Log("Player picked up " + Item);
+        string findObject = "";
+        switch(Item)
+        {
+            case "sword":
+                findObject = "neon avenger";
+                break;
+            case "gun":
+                findObject = "Gun";
+                break;
+        }
+
+        if (findObject != "")
+        {
+            foreach (GameObject g in PickupItems)
+            {
+                if (g.name == findObject)
+                {
+                    g.SetActive(true);
+                }
+            }
+        }
+
     }
 
 	// Update is called once per frame
 	void Update () 
 	{
+        if (Input.GetButtonDown("Fire1"))
+        {
+            if (lastAttackType == 2)
+            {
+                lastAttackType = 1;
+                Ani.Play("SwordAttack1");
+            }
+            else
+            {
+                lastAttackType = 2;
+                Ani.Play("SwordAttack2");
+            }
+           
+        }
+
 
 		Vector3 moveDirection = Vector3.zero;
 		moveDirection.z = Input.GetAxis ("Vertical");
@@ -51,7 +97,9 @@ public class PlayerMovement: MonoBehaviour {
 			mouseLookUp -= Input.GetAxis ("Mouse Y");
 		}
 		mouseLookUp = Mathf.Clamp (mouseLookUp, -90, 90);
-		playerCamera.transform.localEulerAngles = new Vector3(mouseLookUp, 0, 0);
+		
+        playerCamera.transform.localEulerAngles = new Vector3(mouseLookUp, 0, 0);
+        //Mesh.transform.localEulerAngles = new Vector3(mouseLookUp, 0, 0);
 
 		transform.eulerAngles += new Vector3(0,Input.GetAxis("Mouse X"),0);
 
