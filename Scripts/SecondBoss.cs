@@ -8,11 +8,13 @@ public class SecondBoss : MonoBehaviour {
 	public AudioClip jumpSound;
 	public AudioClip squishSound;
 	public GameObject nextBoss;
+	private Hud hud;
 
 	void Start()
 	{
 		animator= GetComponent<Animator>();
 		audioSource = gameObject.AddComponent<AudioSource>();
+		hud = GameObject.Find("Hud").GetComponent<Hud>();
 	}
 
 	void LateUpdate()
@@ -39,6 +41,8 @@ public class SecondBoss : MonoBehaviour {
 
 	public void Die()
 	{
+		hud.FadeTo(Color.white, hud.defaultFadeTime * 0.1f);
+		hud.FadeTo(Color.clear, hud.defaultFadeTime * 0.9f);
 		//animator.SetTrigger("Squish");
 		audioSource.PlayOneShot(squishSound);
 		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);

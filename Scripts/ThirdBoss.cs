@@ -13,12 +13,14 @@ public class ThirdBoss : MonoBehaviour {
 	private AudioSource audioSource;
 	public AudioClip squishSound;
 	public GameObject nextBoss;
+	private Hud hud;
 
 	// Use this for initialization
 	void Start () {
 		target = GameObject.Find("Player").transform;
 		animator = GetComponent<Animator>();
 		audioSource = gameObject.AddComponent<AudioSource>();
+		hud = GameObject.Find("Hud").GetComponent<Hud>();
 		isCharging = false;
 		Invoke("StartCharge", Random.Range(minSpinTime, maxSpinTime));
 	}
@@ -55,6 +57,8 @@ public class ThirdBoss : MonoBehaviour {
 
 	public void Die()
 	{
+		hud.FadeTo(Color.white, hud.defaultFadeTime * 0.1f);
+		hud.FadeTo(Color.clear, hud.defaultFadeTime * 0.9f);
 		//animator.SetTrigger("Squish");
 		audioSource.PlayOneShot(squishSound);
 		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
