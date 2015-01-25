@@ -4,47 +4,52 @@ using System.Collections;
 public class FifthBoss : MonoBehaviour 
 {
 	public float spinSpeed;
-
 	public float minSpinTime;
 	public float maxSpinTime;
+	public ParticleSystem particleSystem;
 
-	public float minTimeDown;
-	public float maxTimeDown;
-
-	public bool isSpinning = true;
+	private Animator animator;
+	private float spinTime = 0;
+	private bool slamming = true;
 
 	// Use this for initialization
 	void Start () 
 	{
-		Spin ();
+		animator = GetComponent<Animator>();
+		Spin();
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if (isSpinning) 
+		float deltaTime = Time.deltaTime;
+		if (spinTime > deltaTime) 
 		{
-			transform.Rotate(new Vector3(0,1,0) * spinSpeed *Time.deltaTime);
+			transform.Rotate(new Vector3(0,1,0) * spinSpeed * deltaTime);
+			spinTime -= deltaTime;
+		}
+		else if (!slamming)
+		{
+			Debug.Log(gameObject.name + " Starts Slamming");
+			animator.SetTrigger("slamall");
+			spinTime = 0.0f;
+			slamming = true;
 		}
 	}
 
 	void Spin()
 	{
-		isSpinning = true;
-		GetComponent<Animator> ().Play ("Idle");
-		Invoke ("Slam", Random.Range (minSpinTime, maxSpinTime));
+		if (slamming) 
+		{
+			spinTime = Random.Range(minSpinTime, maxSpinTime);
+			slamming = false;
+			Debug.Log(gameObject.name + " Starts Spinning For " + spinTime);
+		}
 	}
 
-	void Slam()
-	{
-		isSpinning = false;
-		GetComponent<Animator> ().Play ("slamall");
-		Invoke("WaitSlam", Random.Range(minTimeDown, maxTimeDown));
+	void Spray() {
+		Debug.Log(gameObject.name + " Slam!");
+		particleSystem.Play();
 	}
 
-	void WaitSlam()
-	{
-		//Invoke ("Spin", Random.Range(minSpinTime, maxSpinTime));
-		GetComponent<Animator> ().Play ("readyslamall");
-	}
 }
