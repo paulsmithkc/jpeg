@@ -4,11 +4,11 @@
 		_SpecColor ("Specular Color", Color) = (1,1,1,1)
 		_Shininess ("Shininess", Float) = 10
 		_MainTex ("Base (RGB)", 2D) = "white" {}
-		_DisplacementMagnitude("Displacement Magnitude", Float) = 0.05
-		_DisplacementVerticalPeriod("Displacement Vertical Period", Float) = 10
-		_DisplacementAnimationPeriod("Displacement Animation Period", Float) = 1
+		_DisplacementMagnitude ("Displacement Magnitude", Float) = 0.05
+		_DisplacementVerticalPeriod ("Displacement Vertical Period", Float) = 10
+		_DisplacementAnimationPeriod ("Displacement Animation Period", Float) = 1
 		_OutlineColor ("Outline Color", Color) = (0,0,0,1)
-		_OutlinePower ("Outline Power", Float) = 5
+		_OutlinePower ("Outline Power", Float) = 3
 		
 		//_Thickness ("Thickness (R)", 2D) = "bump" {}
 		//_Power ("Subsurface Power", Float) = 1.0
@@ -44,8 +44,6 @@
 			uniform float4 _OutlineColor;
 		    uniform float _OutlinePower;
 			
-			//uniform float4 _LightColor0;
-			
 			struct vertexInput {
 				float4 pos : POSITION;
 				float3 normal : NORMAL;
@@ -53,22 +51,31 @@
 			};
 			struct vertexOutput {
 				float4 pos : SV_POSITION;
-				float4 lightcolor : COLOR;
+				float3 normal : NORMAL;
 				float2 uv : TEXCOORD0;
+				float4 posWorld : TEXCOORD1;
 			};
 			
 			vertexOutput vert(vertexInput i) {
 				vertexOutput o;
 				
-				float3 normalDirection = normalize(mul(float4(i.normal, 0.0), _World2Object).xyz);
+				// Ripple the surface
 				float3 displacement = _DisplacementMagnitude * (0.5 + 0.5 * sin(
 					i.pos.y * _DisplacementVerticalPeriod + 
 					_Time.w * _DisplacementAnimationPeriod
 				)) * i.normal;
 				i.pos.xyz += displacement;
 				
-				float4 posWorld = mul(_Object2World, i.pos);
-				float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - posWorld.xyz);
+				o.pos = mul(UNITY_MATRIX_MVP, i.pos);
+				o.normal = normalize(mul(float4(i.normal, 0.0), _World2Object).xyz);
+				o.uv = TRANSFORM_TEX(i.uv, _MainTex);
+				o.posWorld = mul(_Object2World, i.pos);
+				return o;
+			}
+			
+			float4 frag(vertexOutput i) : COLOR {
+			
+				float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
 				
 				float3 lightDirecton;
 				float3 atten;
@@ -78,34 +85,31 @@
 					atten = 1.0;
 				} else {
 					// Point lights
-					lightDirecton = _WorldSpaceLightPos0.xyz - posWorld.xyz;
+					lightDirecton = _WorldSpaceLightPos0.xyz - i.posWorld.xyz;
 					atten = 1.0 / length(lightDirecton);
 					lightDirecton = normalize(lightDirecton);
 				}
 				
-				float diffuseStrength = saturate(dot(normalDirection, lightDirecton));
-				float specularStrength = pow(saturate(dot(reflect(-lightDirecton, normalDirection), viewDirection)), _Shininess);
-				
-				float3 diffuseColor = atten * diffuseStrength * float3(1, 1, 1); //_LightColor0.rgb;
+				// Lighting
+				float diffuseStrength = saturate(dot(i.normal, lightDirecton));
+				float specularStrength = pow(saturate(dot(reflect(-lightDirecton, i.normal), viewDirection)), _Shininess);
+				float3 diffuseColor = atten * diffuseStrength * float3(1, 1, 1);
 				float3 specularColor = diffuseColor * _SpecColor.rgb * specularStrength;
 				float3 totalLighting = diffuseColor + specularColor + UNITY_LIGHTMODEL_AMBIENT.rgb;
 				
-				o.pos = mul(UNITY_MATRIX_MVP, i.pos);
-				o.lightcolor.rgb = totalLighting * _Color.rgb;
-				o.lightcolor.a = clamp(0.8 + 0.2 * specularStrength, 0.8, 1.0);
-				o.uv = TRANSFORM_TEX(i.uv, _MainTex);
+				float4 lightcolor = float4( 
+					saturate(totalLighting.r * _Color.r),
+					saturate(totalLighting.g * _Color.g),
+					saturate(totalLighting.b * _Color.b),
+					saturate(0.8 + 0.2 * specularStrength)
+				);
 				
 				// Create the outline
-		        float3 normalView = normalize(mul((float3x3)UNITY_MATRIX_MVP, i.normal));
+		        float3 normalView = normalize(mul((float3x3)UNITY_MATRIX_MVP, mul(i.normal, _Object2World)));
 		        float outline = saturate(pow(length(normalView.xy), _OutlinePower));
-		        o.lightcolor.rgb = lerp(o.lightcolor.rgb, _OutlineColor.rgb, outline);
-				
-				return o;
-			}
-			
-			float4 frag(vertexOutput i) : COLOR {
-				float4 c = i.lightcolor * tex2D(_MainTex, i.uv);
-				return c;
+		        lightcolor.rgb = lerp(lightcolor.rgb, _OutlineColor.rgb, outline);
+		        
+				return lightcolor * tex2D(_MainTex, i.uv);
 			}
 			
 			ENDCG
