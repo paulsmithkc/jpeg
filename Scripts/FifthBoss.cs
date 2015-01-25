@@ -64,7 +64,9 @@ public class FifthBoss : MonoBehaviour
 		hud.FadeTo(Color.clear, hud.defaultFadeTime * 0.9f);
 		//animator.SetTrigger("Squish");
 		audioSource.PlayOneShot(squishSound);
-		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
+		Instantiate(nextBoss, new Vector3(-5, 10, 0), Quaternion.identity);
+		Instantiate(nextBoss, new Vector3(5, 10, 0), Quaternion.identity);
+		Instantiate(nextBoss, new Vector3(0, 10, 5), Quaternion.identity);
 		Destroy(gameObject, hud.defaultFadeTime * 0.1f);
 	}
 }

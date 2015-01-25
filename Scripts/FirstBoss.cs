@@ -28,7 +28,9 @@ public class FirstBoss : MonoBehaviour {
 		audioSource.PlayOneShot(squishSound);
 		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
 		Destroy(gameObject, 5);
-		swordObject.SetActive (true);
+		if (swordObject != null) {
+			swordObject.SetActive(true);
+		}
 	}
 
 	void OnCollisionEnter(Collision c)

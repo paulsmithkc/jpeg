@@ -11,7 +11,8 @@ public class PlayerMovement: MonoBehaviour {
     public GameObject[] PickupItems;
     private Animator animator;
     public GameObject mesh;
- 
+	private Hud hud;
+
 	public bool isAttacking = false;
 	public bool hasSword = false;
 
@@ -39,7 +40,7 @@ public class PlayerMovement: MonoBehaviour {
 			animator.Play("Idle");
 			animator.speed = 2;
 		}
-
+		hud = GameObject.Find("Hud").GetComponent<Hud>();
 	}
 
     /*void PickUpItem(string Item)
@@ -134,5 +135,12 @@ public class PlayerMovement: MonoBehaviour {
 		}
 	}
 
+	public void Die() {
+		hud.FadeTo(Color.black, hud.defaultFadeTime);
+		Invoke("Reload", hud.defaultFadeTime);
+	}
 
+	public void Reload() {
+		Application.LoadLevel(Application.loadedLevel);
+	}
 }
