@@ -13,13 +13,13 @@ public class FirstBoss : MonoBehaviour {
 
 	void Die()
 	{
-		Destroy (player.GetComponent<DamageOnCollide> ());
-		Destroy (gameObject);
-
+		Destroy(player.GetComponent<DamageOnCollide>());
+		animator.SetTrigger("Squish");
+		//Destroy(gameObject);
 	}
 
 	void OnCollisionEnter(Collision c)
 	{
-		animator.SetTrigger("Landing");
+		animator.SetTrigger("Land");
 	}
 }
