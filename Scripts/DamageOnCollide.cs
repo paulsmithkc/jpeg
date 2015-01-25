@@ -13,9 +13,12 @@ public class DamageOnCollide : MonoBehaviour {
 	{
 		if (canDealDamage && c.gameObject.tag == target.ToString()) 
 		{
-			c.gameObject.SendMessage("TakeDamage", damageToDeal, SendMessageOptions.DontRequireReceiver);
-			canDealDamage = false;
-			Invoke("SetCanTakeDamage", delayBetweenHits);
+			c.gameObject.transform.root.BroadcastMessage("TakeDamage", damageToDeal, SendMessageOptions.DontRequireReceiver);
+			if (delayBetweenHits > 0)
+			{
+				canDealDamage = false;
+				Invoke("SetCanDealDamage", delayBetweenHits);
+			}
 		}
 	}
 
@@ -23,10 +26,10 @@ public class DamageOnCollide : MonoBehaviour {
 	{
 		if (canDealDamage && hit.gameObject.tag == target.ToString()) 
 		{
-			hit.gameObject.SendMessage("TakeDamage", damageToDeal, SendMessageOptions.DontRequireReceiver);
-			canDealDamage = false;
+			hit.gameObject.transform.root.BroadcastMessage("TakeDamage", damageToDeal, SendMessageOptions.DontRequireReceiver);
 			if (delayBetweenHits > 0)
 			{
+				canDealDamage = false;
 				Invoke("SetCanDealDamage", delayBetweenHits);
 			}
 		}

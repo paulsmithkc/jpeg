@@ -16,9 +16,12 @@ public class FourthBoss : MonoBehaviour
 	public bool trackPlayer = true;
 	public bool chargeing = false;
 
+	public float lazerStartHeight = 0;
+
 	void Start()
 	{
 		TrackPlayer ();
+		lazerStartHeight = lazerObject.transform.localPosition.y;
 	}
 
 	void Update()
@@ -62,7 +65,8 @@ public class FourthBoss : MonoBehaviour
 		RaycastHit hit;
 		if (Physics.Raycast (transform.position, -transform.forward, out hit, Mathf.Infinity, layersToCheck)) {
 			lazerObject.transform.localScale = new Vector3 (lazerObject.transform.localScale.x, Vector3.Distance (transform.position, hit.point) / 2, lazerObject.transform.localScale.z);
-			lazerObject.transform.position = ((transform.position + hit.point) / 2) + new Vector3 (0, lazerObject.transform.position.y);
+			lazerObject.transform.position = ((transform.position + hit.point) / 2);
+			lazerObject.transform.localPosition = new Vector3 (lazerObject.transform.localPosition.x, lazerStartHeight, lazerObject.transform.localPosition.z);
 		}
 		Invoke ("TrackPlayer", fireDuration);
 	}

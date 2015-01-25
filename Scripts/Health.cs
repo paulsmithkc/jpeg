@@ -5,6 +5,8 @@ public class Health : MonoBehaviour {
 	public int curHealth = 3;
 	public int maxHealth = 3;
 
+	public bool destroyOnDeath = false;
+
 	void Start() {
 		curHealth = maxHealth;
 	}
@@ -25,7 +27,12 @@ public class Health : MonoBehaviour {
 		if (curHealth <= 0)
 		{
 			Debug.Log(gameObject.name + " Died");
-			gameObject.BroadcastMessage("Die", SendMessageOptions.DontRequireReceiver);
+			gameObject.transform.root.BroadcastMessage("Die", SendMessageOptions.DontRequireReceiver);
+			if(destroyOnDeath)
+			{
+				Destroy(gameObject);
+			}
 		}
 	}
+
 }
