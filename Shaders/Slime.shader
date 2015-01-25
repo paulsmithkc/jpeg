@@ -51,9 +51,9 @@
 			};
 			struct vertexOutput {
 				float4 pos : SV_POSITION;
-				float3 normal : NORMAL;
 				float2 uv : TEXCOORD0;
 				float4 posWorld : TEXCOORD1;
+				float3 normal : TEXCOORD2;
 			};
 			
 			vertexOutput vert(vertexInput i) {
@@ -105,7 +105,7 @@
 				);
 				
 				// Create the outline
-		        float3 normalView = normalize(mul((float3x3)UNITY_MATRIX_MVP, mul(i.normal, _Object2World)));
+		        float3 normalView = normalize(mul((float3x3)UNITY_MATRIX_MVP, mul(i.normal, (float3x3)_Object2World)));
 		        float outline = saturate(pow(length(normalView.xy), _OutlinePower));
 		        lightcolor.rgb = lerp(lightcolor.rgb, _OutlineColor.rgb, outline);
 		        
