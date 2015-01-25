@@ -7,6 +7,8 @@
 		_DisplacementMagnitude("Displacement Magnitude", Float) = 0.05
 		_DisplacementVerticalPeriod("Displacement Vertical Period", Float) = 10
 		_DisplacementAnimationPeriod("Displacement Animation Period", Float) = 1
+		_OutlineColor ("Outline Color", Color) = (0,0,0,1)
+		_Outline ("Outline width", Float) = 0.01
 		
 		//_Thickness ("Thickness (R)", 2D) = "bump" {}
 		//_Power ("Subsurface Power", Float) = 1.0
@@ -19,7 +21,61 @@
 		LOD 200
 		
 		Pass {
+			Name "OUTLINE"
+		    Cull Front
+		    Lighting Off
+		    
+		    CGPROGRAM
+		    #pragma vertex vert
+		    #pragma fragment frag
+		    #include "UnityCG.cginc"
+		    
+		    uniform float4 _OutlineColor;
+		    uniform float _Outline;
+		    uniform float _DisplacementMagnitude;
+			uniform float _DisplacementVerticalPeriod;
+			uniform float _DisplacementAnimationPeriod;
+		    
+		    struct vertexInput {
+		        float4 pos : POSITION;
+		        float3 normal : NORMAL;
+		    };
+		    struct vertexOutput {
+		        float4 pos : SV_POSITION;
+		    };
+		 	
+		    vertexOutput vert(vertexInput i) {
+		        vertexOutput o;
+		        
+		        // Animate the mesh
+		        float3 normalDirection = normalize(mul(float4(i.normal, 0.0), _World2Object).xyz);
+		        float3 displacement = _DisplacementMagnitude * (0.5 + 0.5 * sin(
+					i.pos.y * _DisplacementVerticalPeriod + 
+					_Time.w * _DisplacementAnimationPeriod
+				)) * i.normal;
+				i.pos.xyz += displacement;
+				
+				// Transform the vertex into view coordinates
+		        o.pos = mul(UNITY_MATRIX_MVP, i.pos);
+		        
+		        // Create the outline
+		        float3 normalView = mul((float3x3)UNITY_MATRIX_MVP, i.normal);
+		        o.pos.xy += normalView.xy * o.pos.z * _Outline;
+		        
+				return o;
+		    }
+		    
+		    float4 frag (vertexInput i) : COLOR
+		    {
+		        return _OutlineColor;
+		    }
+		 	
+		    ENDCG
+		}
+		Pass {
+			Name "FORWARD"
 			Blend SrcAlpha OneMinusSrcAlpha
+			Lighting On
 			//Cull Off
 			//ZWrite On
 			//ZTest Always
