@@ -11,6 +11,21 @@ public class DamageOnCollide : MonoBehaviour {
 
 	void OnCollisionEnter(Collision c)
 	{
+		OnTriggerEnter (c.collider);
+	}
+
+	void onCollisionStay(Collision c)
+	{
+		OnTriggerEnter (c.collider);
+	}
+
+	void OnTriggerStay(Collider c)
+	{
+		OnTriggerEnter (c);
+	}
+
+	void OnTriggerEnter(Collider c)
+	{
 		if (canDealDamage && c.gameObject.tag == target.ToString()) 
 		{
 			c.gameObject.transform.root.BroadcastMessage("TakeDamage", damageToDeal, SendMessageOptions.DontRequireReceiver);
@@ -24,7 +39,8 @@ public class DamageOnCollide : MonoBehaviour {
 
 	void OnControllerColliderHit(ControllerColliderHit hit)
 	{
-		if (canDealDamage && hit.gameObject.tag == target.ToString()) 
+		OnTriggerEnter (hit.collider);
+		/*if (canDealDamage && hit.gameObject.tag == target.ToString()) 
 		{
 			hit.gameObject.transform.root.BroadcastMessage("TakeDamage", damageToDeal, SendMessageOptions.DontRequireReceiver);
 			if (delayBetweenHits > 0)
@@ -32,7 +48,7 @@ public class DamageOnCollide : MonoBehaviour {
 				canDealDamage = false;
 				Invoke("SetCanDealDamage", delayBetweenHits);
 			}
-		}
+		}*/
 	}
 
 

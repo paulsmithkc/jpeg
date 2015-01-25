@@ -39,6 +39,7 @@ public class ThirdBoss : MonoBehaviour {
 	void StartCharge()
 	{
 		if (!isCharging) {
+			animator.Play("CHARGERUN");
 			Debug.Log(gameObject.name + " Starts Charging");
 			isCharging = true;
 			Invoke("StopCharging", Random.Range(minChargeTime, maxChargeTime));
@@ -48,6 +49,7 @@ public class ThirdBoss : MonoBehaviour {
 	void StopCharging()
 	{
 		if (isCharging) {
+			animator.Play ("DANCING");
 			Debug.Log(gameObject.name + " Stops Charging");
 			isCharging = false;
 			rigidbody.velocity = Vector3.zero;
@@ -62,6 +64,6 @@ public class ThirdBoss : MonoBehaviour {
 		//animator.SetTrigger("Squish");
 		audioSource.PlayOneShot(squishSound);
 		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
-		Destroy(gameObject, 1);
+		Destroy(gameObject, hud.defaultFadeTime * 0.1f);
 	}
 }

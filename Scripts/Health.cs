@@ -8,8 +8,11 @@ public class Health : MonoBehaviour {
 
 	public bool destroyOnDeath = false;
 
+	Hud hud;
+
 	void Start() {
 		curHealth = maxHealth;
+		hud = GameObject.Find("Hud").GetComponent<Hud>();
 	}
 
 	void AddHealth(int amount)
@@ -23,17 +26,29 @@ public class Health : MonoBehaviour {
 
 	void TakeDamage(int damage)
 	{
-		Debug.Log(gameObject.name + " Took Damage");
-		curHealth -= damage;
-		if (curHealth <= 0 && !dead)
+		if (GetComponent<Health> ().enabled) 
 		{
-			Debug.Log(gameObject.name + " Died");
-			gameObject.transform.root.BroadcastMessage("Die", SendMessageOptions.DontRequireReceiver);
-			if(destroyOnDeath)
+			Debug.Log (gameObject.name + " Took Damage");
+			curHealth -= damage;
+			if(gameObject.tag == "Player")
 			{
-				Destroy(gameObject);
+				hud.FadeTo(Color.red, .1f);
+				hud.FadeTo(Color.clear, .3f);
 			}
-			dead = true;
+			if (curHealth <= 0 && !dead) 
+			{
+					Debug.Log (gameObject.name + " Died");
+					if(gameObject != gameObject.transform.root)
+					{
+						gameObject.transform.root.SendMessage("Die", SendMessageOptions.DontRequireReceiver);
+					}else{
+						gameObject.SendMessage("Die", SendMessageOptions.DontRequireReceiver);
+					}
+					if (destroyOnDeath) {
+							Destroy (gameObject);
+					}
+					dead = true;
+			}
 		}
 	}
 

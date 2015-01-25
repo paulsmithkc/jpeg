@@ -19,7 +19,7 @@ public class ItemPickup : MonoBehaviour {
     void OnCollisionEnter(Collision collision) {
         if (collision.collider.tag == "Player")
         {
-            collision.collider.SendMessage("PickUpItem", ItemType);
+            collision.collider.transform.root.SendMessage("PickUpItem", ItemType);
             Destroy(gameObject);
         }
     }
@@ -29,7 +29,7 @@ public class ItemPickup : MonoBehaviour {
     {
         if (collider.tag == "Player")
         {
-            collider.SendMessage("PickUpItem", ItemType);
+            collider.transform.root.SendMessage("PickUpItem", ItemType);
             Destroy(gameObject);
         }
     }
@@ -38,7 +38,7 @@ public class ItemPickup : MonoBehaviour {
 	{
 		if (hit.transform.tag == "Player")
 		{
-			hit.transform.SendMessage("PickUpItem", ItemType);
+			hit.transform.root.SendMessage("PickUpItem", ItemType);
 			Destroy(gameObject);
 		}
 	}

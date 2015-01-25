@@ -12,6 +12,8 @@ public class PlayerMovement: MonoBehaviour {
     private Animator animator;
     public GameObject mesh;
  
+	public bool isAttacking = false;
+	public bool hasSword = false;
 
 	public bool invertY = true;
 
@@ -35,10 +37,12 @@ public class PlayerMovement: MonoBehaviour {
 		if (mesh != null) {
 			animator = mesh.GetComponent<Animator>();
 			animator.Play("Idle");
+			animator.speed = 2;
 		}
+
 	}
 
-    void PickUpItem(string Item)
+    /*void PickUpItem(string Item)
     {
         Debug.Log("Player picked up " + Item);
         string findObject = "";
@@ -46,6 +50,7 @@ public class PlayerMovement: MonoBehaviour {
         {
             case "sword":
                 findObject = "neon avenger";
+
                 break;
             case "gun":
                 findObject = "Gun";
@@ -63,24 +68,36 @@ public class PlayerMovement: MonoBehaviour {
             }
         }
 
-    }
+    }*/
+
+	void StopAttack()
+	{
+		isAttacking = false;
+		playerCamera.GetComponent<Collider>().enabled = false;
+	}
 
 	// Update is called once per frame
 	void Update () 
 	{
-		if (animator != null && Input.GetButtonDown("Fire1"))
-        {
-            if (lastAttackType == 2)
-            {
-                lastAttackType = 1;
-				animator.Play("SwordAttack1");
-            }
-            else
-            {
-                lastAttackType = 2;
-				animator.Play("SwordAttack2");
-            }
-        }
+		if (!isAttacking && hasSword) 
+		{
+			if (animator != null && Input.GetButtonDown ("Fire1")) 
+			{
+				isAttacking = true;
+				if (lastAttackType == 2) 
+				{
+					lastAttackType = 1;
+					animator.CrossFade("SwordAttack1",.2f);
+					playerCamera.GetComponent<Collider>().enabled = true;
+					Invoke("StopAttack", .3f);
+				} else {
+					lastAttackType = 2;
+					animator.CrossFade ("SwordAttack2", .2f);
+					playerCamera.GetComponent<Collider>().enabled = true;
+					Invoke("StopAttack", .25f);
+				}
+			}
+		}
 
 		Vector3 moveDirection = Vector3.zero;
 		moveDirection.z = Input.GetAxis ("Vertical");
@@ -116,4 +133,6 @@ public class PlayerMovement: MonoBehaviour {
 			vel.y = 0;
 		}
 	}
+
+
 }
