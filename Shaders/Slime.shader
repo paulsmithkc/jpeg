@@ -8,7 +8,7 @@
 		_DisplacementVerticalPeriod("Displacement Vertical Period", Float) = 10
 		_DisplacementAnimationPeriod("Displacement Animation Period", Float) = 1
 		_OutlineColor ("Outline Color", Color) = (0,0,0,1)
-		_Outline ("Outline width", Float) = 0.01
+		_OutlinePower ("Outline Power", Float) = 5
 		
 		//_Thickness ("Thickness (R)", 2D) = "bump" {}
 		//_Power ("Subsurface Power", Float) = 1.0
@@ -20,63 +20,6 @@
 		Tags { "RenderType" = "Opaque" "LightMode" = "ForwardBase" "Queue" = "Transparent" }
 		LOD 200
 		
-		Pass {
-			Name "OUTLINE"
-			Blend SrcAlpha OneMinusSrcAlpha
-		    Cull Front
-		    Lighting Off
-		    
-		    CGPROGRAM
-		    #pragma vertex vert
-		    #pragma fragment frag
-		    #include "UnityCG.cginc"
-		    
-		    uniform float4 _OutlineColor;
-		    uniform float _Outline;
-		    uniform float _DisplacementMagnitude;
-			uniform float _DisplacementVerticalPeriod;
-			uniform float _DisplacementAnimationPeriod;
-		    
-		    struct vertexInput {
-		        float4 pos : POSITION;
-		        float3 normal : NORMAL;
-		    };
-		    struct vertexOutput {
-		        float4 pos : SV_POSITION;
-		        float4 col : COLOR;
-		    };
-		 	
-		    vertexOutput vert(vertexInput i) {
-		        vertexOutput o;
-		        
-		        // Animate the mesh
-		        float3 normalDirection = normalize(mul(float4(i.normal, 0.0), _World2Object).xyz);
-		        float3 displacement = _DisplacementMagnitude * (0.5 + 0.5 * sin(
-					i.pos.y * _DisplacementVerticalPeriod + 
-					_Time.w * _DisplacementAnimationPeriod
-				)) * i.normal;
-				i.pos.xyz += displacement;
-				
-				// Transform the vertex into view coordinates
-		        o.pos = mul(UNITY_MATRIX_MVP, i.pos);
-		        
-		        // Create the outline
-		        float3 normalView = normalize(mul((float3x3)UNITY_MATRIX_MVP, i.normal));
-		        o.pos.xy += normalView.xy * o.pos.z * _Outline;
-		        
-		        // Compute the color
-		        o.col.rgb = _OutlineColor.rgb;
-		        o.col.a = pow(length(normalView.xy), 3);
-				return o;
-		    }
-		    
-		    float4 frag(vertexOutput i) : COLOR
-		    {
-		        return i.col;
-		    }
-		 	
-		    ENDCG
-		}
 		Pass {
 			Name "FORWARD"
 			Blend SrcAlpha OneMinusSrcAlpha
@@ -98,8 +41,10 @@
 			uniform float _DisplacementMagnitude;
 			uniform float _DisplacementVerticalPeriod;
 			uniform float _DisplacementAnimationPeriod;
+			uniform float4 _OutlineColor;
+		    uniform float _OutlinePower;
 			
-			uniform float4 _LightColor0;
+			//uniform float4 _LightColor0;
 			
 			struct vertexInput {
 				float4 pos : POSITION;
@@ -141,7 +86,7 @@
 				float diffuseStrength = saturate(dot(normalDirection, lightDirecton));
 				float specularStrength = pow(saturate(dot(reflect(-lightDirecton, normalDirection), viewDirection)), _Shininess);
 				
-				float3 diffuseColor = atten * diffuseStrength * _LightColor0.rgb;
+				float3 diffuseColor = atten * diffuseStrength * float3(1, 1, 1); //_LightColor0.rgb;
 				float3 specularColor = diffuseColor * _SpecColor.rgb * specularStrength;
 				float3 totalLighting = diffuseColor + specularColor + UNITY_LIGHTMODEL_AMBIENT.rgb;
 				
@@ -149,11 +94,18 @@
 				o.lightcolor.rgb = totalLighting * _Color.rgb;
 				o.lightcolor.a = clamp(0.8 + 0.2 * specularStrength, 0.8, 1.0);
 				o.uv = TRANSFORM_TEX(i.uv, _MainTex);
+				
+				// Create the outline
+		        float3 normalView = normalize(mul((float3x3)UNITY_MATRIX_MVP, i.normal));
+		        float outline = saturate(pow(length(normalView.xy), _OutlinePower));
+		        o.lightcolor.rgb = lerp(o.lightcolor.rgb, _OutlineColor.rgb, outline);
+				
 				return o;
 			}
 			
 			float4 frag(vertexOutput i) : COLOR {
-				return i.lightcolor * tex2D(_MainTex, i.uv);
+				float4 c = i.lightcolor * tex2D(_MainTex, i.uv);
+				return c;
 			}
 			
 			ENDCG
