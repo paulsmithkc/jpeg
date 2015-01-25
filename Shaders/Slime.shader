@@ -22,6 +22,7 @@
 		
 		Pass {
 			Name "OUTLINE"
+			Blend SrcAlpha OneMinusSrcAlpha
 		    Cull Front
 		    Lighting Off
 		    
@@ -42,6 +43,7 @@
 		    };
 		    struct vertexOutput {
 		        float4 pos : SV_POSITION;
+		        float4 col : COLOR;
 		    };
 		 	
 		    vertexOutput vert(vertexInput i) {
@@ -59,15 +61,18 @@
 		        o.pos = mul(UNITY_MATRIX_MVP, i.pos);
 		        
 		        // Create the outline
-		        float3 normalView = mul((float3x3)UNITY_MATRIX_MVP, i.normal);
+		        float3 normalView = normalize(mul((float3x3)UNITY_MATRIX_MVP, i.normal));
 		        o.pos.xy += normalView.xy * o.pos.z * _Outline;
 		        
+		        // Compute the color
+		        o.col.rgb = _OutlineColor.rgb;
+		        o.col.a = pow(length(normalView.xy), 3);
 				return o;
 		    }
 		    
-		    float4 frag (vertexInput i) : COLOR
+		    float4 frag(vertexOutput i) : COLOR
 		    {
-		        return _OutlineColor;
+		        return i.col;
 		    }
 		 	
 		    ENDCG
@@ -153,6 +158,6 @@
 			
 			ENDCG
 		}
-	} 
+	}
 	FallBack "Diffuse"
 }
