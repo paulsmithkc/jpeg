@@ -62,7 +62,7 @@ public class ThirdBoss : MonoBehaviour {
 	{
 		hud.FadeTo(Color.white, 1);
 		hud.FadeTo(Color.clear, 3);
-		//animator.SetTrigger("Squish");
+		animator.SetTrigger("Squish");
 		audioSource.PlayOneShot(squishSound);
 		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
 		Destroy(gameObject, 1);
