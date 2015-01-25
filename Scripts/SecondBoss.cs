@@ -9,6 +9,7 @@ public class SecondBoss : MonoBehaviour {
 	public AudioClip squishSound;
 	public GameObject nextBoss;
 	private Hud hud;
+	public GameObject bodyMesh;
 
 	void Start()
 	{
@@ -41,11 +42,16 @@ public class SecondBoss : MonoBehaviour {
 
 	public void Die()
 	{
-		hud.FadeTo(Color.white, hud.defaultFadeTime * 0.1f);
-		hud.FadeTo(Color.clear, hud.defaultFadeTime * 0.9f);
+		hud.FadeTo(Color.white, 1);
+		hud.FadeTo(Color.clear, 3);
 		//animator.SetTrigger("Squish");
 		audioSource.PlayOneShot(squishSound);
 		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
-		Destroy(gameObject, hud.defaultFadeTime * 0.1f);
+		Destroy(gameObject, 1);
+
+		var m = bodyMesh.GetComponent<Renderer>().material;
+		m.SetFloat("_DisplacementMagnitude", 0.2f);
+		m.SetFloat("_DisplacementVerticalPeriod", 100.0f);
+		m.SetFloat("_DisplacementAnimationPeriod", 2.0f);
 	}
 }

@@ -28,7 +28,7 @@ public class Health : MonoBehaviour {
 	{
 		if (GetComponent<Health> ().enabled) 
 		{
-			Debug.Log (gameObject.name + " Took Damage");
+			Debug.Log(gameObject.name + " Took Damage");
 			curHealth -= damage;
 			if(gameObject.tag == "Player")
 			{
