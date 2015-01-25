@@ -13,6 +13,7 @@ public class FifthBoss : MonoBehaviour
 	private bool slamming = true;
 	private AudioSource audioSource;
 	public AudioClip squishSound;
+	public AudioClip slamSound;
 	public GameObject nextBoss;
 	private Hud hud;
 	public GameObject bodyMesh;
@@ -57,6 +58,7 @@ public class FifthBoss : MonoBehaviour
 	void Spray() {
 		Debug.Log(gameObject.name + " Slam!");
 		myParticleSystem.Play();
+		audioSource.PlayOneShot(slamSound, 2.0f);
 	}
 
 	public void Die()

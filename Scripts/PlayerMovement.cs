@@ -22,6 +22,7 @@ public class PlayerMovement: MonoBehaviour {
 	private float mouseLookUp = 0;
 	private AudioSource audioSource;
 	public AudioClip jumpSound;
+	public AudioClip swingSound;
 	public AudioClip music;
 	public float musicVolume = 1.0f;
 
@@ -84,6 +85,7 @@ public class PlayerMovement: MonoBehaviour {
 		{
 			if (animator != null && Input.GetButtonDown ("Fire1")) 
 			{
+				audioSource.PlayOneShot(swingSound);
 				isAttacking = true;
 				if (lastAttackType == 2) 
 				{

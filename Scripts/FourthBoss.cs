@@ -21,6 +21,7 @@ public class FourthBoss : MonoBehaviour
 	private Animator animator;
 	private AudioSource audioSource;
 	public AudioClip squishSound;
+	public AudioClip lazerSound;
 	public GameObject nextBoss;
 	private Hud hud;
 	public GameObject bodyMesh;
@@ -63,11 +64,12 @@ public class FourthBoss : MonoBehaviour
 		chargeing = false;
 		lazerObject.SetActive(false);
 		Invoke ("ChargeAttack", trackPlayerDuration);
+		audioSource.Stop();
 	}
 
 	void ChargeAttack()
 	{
-		GetComponent<Health> ().enabled = true;
+		GetComponent<Health>().enabled = true;
 		animator.Play ("VisorOpen");
 		Debug.Log ("Playing Open");
 		trackPlayer = false;
@@ -82,6 +84,9 @@ public class FourthBoss : MonoBehaviour
 		chargeing = false;
 		lazerObject.SetActive(true);
 		Invoke ("TrackPlayer", fireDuration);
+		audioSource.clip = lazerSound;
+		audioSource.loop = true;
+		audioSource.Play();
 	}
 
 	public void Die()
