@@ -18,9 +18,17 @@ public class FourthBoss : MonoBehaviour
 
 	public float lazerStartHeight = 0;
 
+	private Animator animator;
+	private AudioSource audioSource;
+	public AudioClip squishSound;
+	public GameObject nextBoss;
+
 	void Start()
 	{
-		TrackPlayer ();
+		player = GameObject.Find("Player");
+		animator = GetComponent<Animator>();
+		audioSource = gameObject.AddComponent<AudioSource>();
+		TrackPlayer();
 		lazerStartHeight = lazerObject.transform.localPosition.y;
 	}
 
@@ -69,5 +77,13 @@ public class FourthBoss : MonoBehaviour
 			lazerObject.transform.localPosition = new Vector3 (lazerObject.transform.localPosition.x, lazerStartHeight, lazerObject.transform.localPosition.z);
 		}
 		Invoke ("TrackPlayer", fireDuration);
+	}
+
+	public void Die()
+	{
+		//animator.SetTrigger("Squish");
+		audioSource.PlayOneShot(squishSound);
+		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
+		Destroy(gameObject);
 	}
 }

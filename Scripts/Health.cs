@@ -2,8 +2,9 @@
 using System.Collections;
 
 public class Health : MonoBehaviour {
-	public int curHealth = 3;
-	public int maxHealth = 3;
+	public int curHealth = 1;
+	public int maxHealth = 1;
+	public bool dead = false;
 
 	public bool destroyOnDeath = false;
 
@@ -24,7 +25,7 @@ public class Health : MonoBehaviour {
 	{
 		Debug.Log(gameObject.name + " Took Damage");
 		curHealth -= damage;
-		if (curHealth <= 0)
+		if (curHealth <= 0 && !dead)
 		{
 			Debug.Log(gameObject.name + " Died");
 			gameObject.transform.root.BroadcastMessage("Die", SendMessageOptions.DontRequireReceiver);
@@ -32,6 +33,7 @@ public class Health : MonoBehaviour {
 			{
 				Destroy(gameObject);
 			}
+			dead = true;
 		}
 	}
 

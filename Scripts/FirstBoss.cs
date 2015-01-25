@@ -6,21 +6,21 @@ public class FirstBoss : MonoBehaviour {
 	private Animator animator;
 	private AudioSource audioSource;
 	public AudioClip squishSound;
+	public GameObject nextBoss;
 
 	void Start()
 	{
-		player = GameObject.Find ("Player");
+		player = GameObject.Find("Player");
 		animator = GetComponent<Animator>();
 		audioSource = gameObject.AddComponent<AudioSource>();
 	}
 
-	void Die()
+	public void Die()
 	{
-		Destroy(player.GetComponent<DamageOnCollide>());
+		//Destroy(player.GetComponent<DamageOnCollide>());
 		animator.SetTrigger("Squish");
 		audioSource.PlayOneShot(squishSound);
-
-		//Destroy(gameObject);
+		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
 	}
 
 	void OnCollisionEnter(Collision c)

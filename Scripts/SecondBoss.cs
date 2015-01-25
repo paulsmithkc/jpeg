@@ -2,14 +2,16 @@
 using System.Collections;
 
 public class SecondBoss : MonoBehaviour {
-	private Animator ani;
+	private Animator animator;
 	public float jumpStrength = .2f;
 	private AudioSource audioSource;
 	public AudioClip jumpSound;
+	public AudioClip squishSound;
+	public GameObject nextBoss;
 
 	void Start()
 	{
-		ani = GetComponent<Animator>();
+		animator= GetComponent<Animator>();
 		audioSource = gameObject.AddComponent<AudioSource>();
 	}
 
@@ -27,11 +29,19 @@ public class SecondBoss : MonoBehaviour {
 		rigidbody.position = transform.position + (direction * Time.deltaTime);
 
 		audioSource.PlayOneShot(jumpSound);
-		ani.Play("walk");
+		animator.Play("walk");
 	}
 
 	public void DoIdle()
 	{
-		ani.Play ("Idle");
+		animator.Play("Idle");
+	}
+
+	public void Die()
+	{
+		//animator.SetTrigger("Squish");
+		audioSource.PlayOneShot(squishSound);
+		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
+		Destroy(gameObject);
 	}
 }

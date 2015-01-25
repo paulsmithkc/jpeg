@@ -4,18 +4,22 @@ using System.Collections;
 public class FifthBoss : MonoBehaviour 
 {
 	public float spinSpeed;
-	public float minSpinTime;
-	public float maxSpinTime;
-	public ParticleSystem particleSystem;
+	public float minSpinTime = 4;
+	public float maxSpinTime = 8;
+	public ParticleSystem myParticleSystem;
 
 	private Animator animator;
 	private float spinTime = 0;
 	private bool slamming = true;
+	private AudioSource audioSource;
+	public AudioClip squishSound;
+	public GameObject nextBoss;
 
 	// Use this for initialization
 	void Start () 
 	{
 		animator = GetComponent<Animator>();
+		audioSource = gameObject.AddComponent<AudioSource>();
 		Spin();
 	}
 	
@@ -49,7 +53,14 @@ public class FifthBoss : MonoBehaviour
 
 	void Spray() {
 		Debug.Log(gameObject.name + " Slam!");
-		particleSystem.Play();
+		myParticleSystem.Play();
 	}
 
+	public void Die()
+	{
+		//animator.SetTrigger("Squish");
+		audioSource.PlayOneShot(squishSound);
+		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
+		Destroy(gameObject);
+	}
 }
