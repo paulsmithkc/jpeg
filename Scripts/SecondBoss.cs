@@ -2,12 +2,15 @@
 using System.Collections;
 
 public class SecondBoss : MonoBehaviour {
-	Animator ani;
+	private Animator ani;
 	public float jumpStrength = .2f;
+	private AudioSource audioSource;
+	public AudioClip jumpSound;
 
 	void Start()
 	{
 		ani = GetComponent<Animator>();
+		audioSource = gameObject.AddComponent<AudioSource>();
 	}
 
 	void LateUpdate()
@@ -23,6 +26,7 @@ public class SecondBoss : MonoBehaviour {
 		rigidbody.velocity = direction;
 		rigidbody.position = transform.position + (direction * Time.deltaTime);
 
+		audioSource.PlayOneShot(jumpSound);
 		ani.Play("walk");
 	}
 

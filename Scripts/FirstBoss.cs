@@ -5,8 +5,6 @@ public class FirstBoss : MonoBehaviour {
 	private GameObject player;
 	private Animator animator;
 	private AudioSource audioSource;
-
-
 	public AudioClip squishSound;
 
 	void Start()

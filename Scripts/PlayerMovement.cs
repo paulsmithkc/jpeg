@@ -12,11 +12,13 @@ public class PlayerMovement: MonoBehaviour {
 
 	private CharacterController cc;
 	private float mouseLookUp = 0;
-
+	private AudioSource audioSource;
+	public AudioClip jumpSound;
 
 	void Start () 
 	{
-		cc = GetComponent<CharacterController> ();
+		cc = GetComponent<CharacterController>();
+		audioSource = gameObject.AddComponent<AudioSource>();
 	}
 
     void PickUpItem(string Item)
@@ -48,8 +50,9 @@ public class PlayerMovement: MonoBehaviour {
 		transform.eulerAngles += new Vector3(0,Input.GetAxis("Mouse X"),0);
 
 		if(Input.GetButtonDown("Jump") && cc.isGrounded)
-		   {
+		{
 			vel.y = jumpSpeed;
+			audioSource.PlayOneShot(jumpSound);
 		}
 		vel.y -= gravity * Time.deltaTime;
 
