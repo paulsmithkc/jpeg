@@ -41,14 +41,14 @@ public class Hud : MonoBehaviour {
 				fadeImage.color = Color.Lerp(currentFade.targetColor, startColor, fadeTimeLeft / currentFade.fadeTime);
 				fadeImage.enabled = true;
 			} else if (fades.Count > 0) {
-				Debug.Log("Fade Completed");
+			//	Debug.Log("Fade Completed");
 				startColor = currentFade.targetColor;
 				fadeImage.color = startColor;
 				fadeImage.enabled = true;
 				currentFade = fades.Dequeue();
 				fadeTimeLeft = currentFade.fadeTime;
 			} else {
-				Debug.Log("Fade Completed");
+//				Debug.Log("Fade Completed");
 				startColor = currentFade.targetColor;
 				fadeImage.color = startColor;
 				fadeImage.enabled = currentFade.targetColor.a > 0.0f;

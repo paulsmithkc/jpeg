@@ -23,17 +23,19 @@ public class Health : MonoBehaviour {
 
 	void TakeDamage(int damage)
 	{
-		Debug.Log(gameObject.name + " Took Damage");
-		curHealth -= damage;
-		if (curHealth <= 0 && !dead)
+		if (GetComponent<Health> ().enabled) 
 		{
-			Debug.Log(gameObject.name + " Died");
-			gameObject.transform.root.BroadcastMessage("Die", SendMessageOptions.DontRequireReceiver);
-			if(destroyOnDeath)
+			Debug.Log (gameObject.name + " Took Damage");
+			curHealth -= damage;
+			if (curHealth <= 0 && !dead) 
 			{
-				Destroy(gameObject);
+					Debug.Log (gameObject.name + " Died");
+					gameObject.SendMessage("Die", SendMessageOptions.DontRequireReceiver);
+					if (destroyOnDeath) {
+							Destroy (gameObject);
+					}
+					dead = true;
 			}
-			dead = true;
 		}
 	}
 

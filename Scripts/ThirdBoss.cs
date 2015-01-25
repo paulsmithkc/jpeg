@@ -62,6 +62,6 @@ public class ThirdBoss : MonoBehaviour {
 		//animator.SetTrigger("Squish");
 		audioSource.PlayOneShot(squishSound);
 		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
-		Destroy(gameObject, 1);
+		Destroy(gameObject, hud.defaultFadeTime * 0.1f);
 	}
 }

@@ -36,22 +36,28 @@ public class FourthBoss : MonoBehaviour
 
 	void Update()
 	{
-		if (trackPlayer) 
-		{
-
-			transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.forward, (transform.position - player.transform.position).normalized, turnSpeed, 0.0f));
-			transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
-			lazerObject.SetActive (false);
-		} else if (chargeing) {
-			//chargeObject.transform.localScale += new Vector3(1,1,1) * Time.deltaTime;
-		}
+		if (trackPlayer) {
+						transform.rotation = Quaternion.LookRotation (Vector3.RotateTowards (transform.forward, (transform.position - player.transform.position).normalized, turnSpeed, 0.0f));
+						transform.eulerAngles = new Vector3 (0, transform.eulerAngles.y, 0);
+						lazerObject.SetActive (false);
+				} else if (chargeing) {
+						//chargeObject.transform.localScale += new Vector3(1,1,1) * Time.deltaTime;
+				} else {
+			RaycastHit hit;
+			if (Physics.Raycast (transform.position, -transform.forward, out hit, Mathf.Infinity, layersToCheck)) {
+				lazerObject.transform.localScale = new Vector3 (lazerObject.transform.localScale.x, Vector3.Distance (transform.position, hit.point) / 2, lazerObject.transform.localScale.z);
+				lazerObject.transform.position = ((transform.position + hit.point) / 2);
+				lazerObject.transform.localPosition = new Vector3 (lazerObject.transform.localPosition.x, lazerStartHeight, lazerObject.transform.localPosition.z);
+			}
+				}
 	}
 
 	void TrackPlayer()
 	{
-		chargeObject.transform.localScale = Vector3.zero;
-		GetComponent<Animator> ().Play ("VisorClose");
-		GetComponent<Animator> ().Play ("Blink");
+		GetComponent<Health> ().enabled = false;
+//		chargeObject.transform.localScale = Vector3.zero;
+		animator.Play("VisorClose");
+		Debug.Log ("Playing Close");
 		trackPlayer = true;
 		chargeing = false;
 		lazerObject.SetActive(false);
@@ -60,7 +66,9 @@ public class FourthBoss : MonoBehaviour
 
 	void ChargeAttack()
 	{
-		GetComponent<Animator> ().Play ("VisorOpen");
+		GetComponent<Health> ().enabled = true;
+		animator.Play ("VisorOpen");
+		Debug.Log ("Playing Open");
 		trackPlayer = false;
 		chargeing = true;
 		lazerObject.SetActive(false);
@@ -72,12 +80,6 @@ public class FourthBoss : MonoBehaviour
 		trackPlayer = false;
 		chargeing = false;
 		lazerObject.SetActive(true);
-		RaycastHit hit;
-		if (Physics.Raycast (transform.position, -transform.forward, out hit, Mathf.Infinity, layersToCheck)) {
-			lazerObject.transform.localScale = new Vector3 (lazerObject.transform.localScale.x, Vector3.Distance (transform.position, hit.point) / 2, lazerObject.transform.localScale.z);
-			lazerObject.transform.position = ((transform.position + hit.point) / 2);
-			lazerObject.transform.localPosition = new Vector3 (lazerObject.transform.localPosition.x, lazerStartHeight, lazerObject.transform.localPosition.z);
-		}
 		Invoke ("TrackPlayer", fireDuration);
 	}
 
@@ -88,6 +90,6 @@ public class FourthBoss : MonoBehaviour
 		//animator.SetTrigger("Squish");
 		audioSource.PlayOneShot(squishSound);
 		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
-		Destroy(gameObject, 1);
+		Destroy(gameObject, hud.defaultFadeTime * 0.1f);
 	}
 }
