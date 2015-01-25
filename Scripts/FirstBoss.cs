@@ -21,6 +21,7 @@ public class FirstBoss : MonoBehaviour {
 		animator.SetTrigger("Squish");
 		audioSource.PlayOneShot(squishSound);
 		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
+		Destroy(gameObject, 5);
 	}
 
 	void OnCollisionEnter(Collision c)

@@ -9,8 +9,8 @@ public class PlayerMovement: MonoBehaviour {
 	public float jumpSpeed = 2;
 	public Camera playerCamera;
     public GameObject[] PickupItems;
-    public Animator Ani;
-    public GameObject Mesh;
+    private Animator animator;
+    public GameObject mesh;
  
 
 	public bool invertY = true;
@@ -32,8 +32,10 @@ public class PlayerMovement: MonoBehaviour {
 		audioSource.clip = music;
 		audioSource.volume = musicVolume;
 		audioSource.Play();
-		Ani = Mesh.GetComponent<Animator>();
-        Ani.Play("Idle");
+		if (mesh != null) {
+			animator = mesh.GetComponent<Animator>();
+			animator.Play("Idle");
+		}
 	}
 
     void PickUpItem(string Item)
@@ -66,21 +68,19 @@ public class PlayerMovement: MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-        if (Input.GetButtonDown("Fire1"))
+		if (animator != null && Input.GetButtonDown("Fire1"))
         {
             if (lastAttackType == 2)
             {
                 lastAttackType = 1;
-                Ani.Play("SwordAttack1");
+				animator.Play("SwordAttack1");
             }
             else
             {
                 lastAttackType = 2;
-                Ani.Play("SwordAttack2");
+				animator.Play("SwordAttack2");
             }
-           
         }
-
 
 		Vector3 moveDirection = Vector3.zero;
 		moveDirection.z = Input.GetAxis ("Vertical");

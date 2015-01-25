@@ -61,6 +61,6 @@ public class FifthBoss : MonoBehaviour
 		//animator.SetTrigger("Squish");
 		audioSource.PlayOneShot(squishSound);
 		Instantiate(nextBoss, new Vector3(0, 10, 0), Quaternion.identity);
-		Destroy(gameObject);
+		Destroy(gameObject, 1);
 	}
 }
