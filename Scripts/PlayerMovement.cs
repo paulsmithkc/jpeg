@@ -14,11 +14,17 @@ public class PlayerMovement: MonoBehaviour {
 	private float mouseLookUp = 0;
 	private AudioSource audioSource;
 	public AudioClip jumpSound;
+	public AudioClip music;
+	public float musicVolume = 1.0f;
 
 	void Start () 
 	{
 		cc = GetComponent<CharacterController>();
 		audioSource = gameObject.AddComponent<AudioSource>();
+		audioSource.loop = true;
+		audioSource.clip = music;
+		audioSource.volume = musicVolume;
+		audioSource.Play();
 	}
 
     void PickUpItem(string Item)
