@@ -39,6 +39,7 @@ public class ThirdBoss : MonoBehaviour {
 	void StartCharge()
 	{
 		if (!isCharging) {
+			animator.Play("CHARGERUN");
 			Debug.Log(gameObject.name + " Starts Charging");
 			isCharging = true;
 			Invoke("StopCharging", Random.Range(minChargeTime, maxChargeTime));
@@ -48,6 +49,7 @@ public class ThirdBoss : MonoBehaviour {
 	void StopCharging()
 	{
 		if (isCharging) {
+			animator.Play ("DANCING");
 			Debug.Log(gameObject.name + " Stops Charging");
 			isCharging = false;
 			rigidbody.velocity = Vector3.zero;
